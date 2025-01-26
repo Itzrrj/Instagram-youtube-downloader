@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from pymongo import MongoClient
-from instagrapi import Client as InstaClient
+import instaloader
 import yt_dlp
 import os
 from dotenv import load_dotenv
@@ -25,16 +25,8 @@ REQUIRED_CHANNELS = ["@SR_ROBOTS", "@Xstream_links2"]  # Replace with your chann
 # Initialize Bot and Database
 bot = Client("instagram_downloader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# Initialize Instagram Client
-insta_client = InstaClient()
-
-# Login to Instagram
-try:
-    insta_client.login(INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD)
-    print("Logged in to Instagram successfully!")
-except Exception as e:
-    print(f"Instagram login failed: {e}")
-    exit()
+# Initialize Instaloader for Instagram content downloading
+insta_loader = instaloader.Instaloader()
 
 # Initialize MongoDB Client
 db_client = MongoClient(MONGO_URI)
@@ -113,12 +105,19 @@ async def download_media(client, message: Message):
         )
         return
 
-    # Download Instagram content
+    # Download Instagram content (Public Posts and Stories)
     if "instagram.com" in url:
         try:
-            media_path = insta_client.video_download(url)
-            await message.reply_document(document=media_path, caption="Here is your Instagram video!")
-            os.remove(media_path)  # Clean up
+            if "stories" in url:  # Detect Instagram story URL
+                shortcode = url.split("/")[-2]
+                insta_loader.download_story(storyitems=[insta_loader.get_story_item(shortcode)], target=f"downloads/{shortcode}")
+                media_path = f"downloads/{shortcode}.jpg"  # Change if you need more specific handling
+            else:  # For Instagram posts
+                insta_loader.download_post(insta_loader.get_post(url), target="downloads/")
+                media_path = f"downloads/{url.split('/')[-1]}.jpg"
+
+            await message.reply_document(document=media_path, caption="Here is your Instagram media!")
+            os.remove(media_path)  # Clean up after sending the media
         except Exception as e:
             await message.reply(f"Failed to download Instagram media: {e}")
 
