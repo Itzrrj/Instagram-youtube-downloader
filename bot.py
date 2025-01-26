@@ -20,7 +20,7 @@ INSTAGRAM_USERNAME = os.getenv("INSTAGRAM_USERNAME")
 INSTAGRAM_PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
 
 # Define required channels globally
-REQUIRED_CHANNELS = ["@channel1", "@channel2"]  # Replace with your channel usernames
+REQUIRED_CHANNELS = ["@SR_ROBOTS", "@Xstream_links2"]  # Replace with your channel usernames
 
 # Initialize Bot and Database
 bot = Client("instagram_downloader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
