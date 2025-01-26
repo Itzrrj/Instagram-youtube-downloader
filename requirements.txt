@@ -5,3 +5,4 @@ instagrapi
 pymongo
 python-dotenv
 Pillow>=8.1.1
+instaloader
