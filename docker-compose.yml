@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: instagram-bot-container
+    env_file:
+      - .env  # This loads the environment variables from the .env file
+    ports:
+      - "8080:8080"
+    restart: always  # Automatically restart the bot if it crashes
