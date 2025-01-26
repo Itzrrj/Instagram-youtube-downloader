@@ -20,7 +20,7 @@ INSTAGRAM_USERNAME = os.getenv("INSTAGRAM_USERNAME")
 INSTAGRAM_PASSWORD = os.getenv("INSTAGRAM_PASSWORD")
 
 # Define required channels globally
-REQUIRED_CHANNELS = ["@SR_ROBOTS", "@Xstream_links2"]  # Replace with your channel usernames
+REQUIRED_CHANNELS = ["@channel1", "@channel2"]  # Replace with your channel usernames
 
 # Initialize Bot and Database
 bot = Client("instagram_downloader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
@@ -70,8 +70,8 @@ async def start(client, message: Message):
         buttons = [
             [InlineKeyboardButton("Join Channel 1", url=f"https://t.me/{REQUIRED_CHANNELS[0][1:]}")],
             [InlineKeyboardButton("Join Channel 2", url=f"https://t.me/{REQUIRED_CHANNELS[1][1:]}")],
-            [InlineKeyboardButton("Join Channel 3", url=f"https://t.me/+6HvyRM1ccNM5YzE1")]
-            [InlineKeyboardButton("I Joined ✅", callback_data="check_subscription")],
+            [InlineKeyboardButton("Join Channel 3", url="https://t.me/+6HvyRM1ccNM5YzE1")],  # New button added here, moved to 3rd position
+            [InlineKeyboardButton("I Joined ✅", callback_data="check_subscription")]
         ]
         await message.reply(
             "You need to join our channels to use this bot:",
@@ -91,17 +91,21 @@ async def check_subscription(client, callback_query):
         await callback_query.answer("You haven't joined the channels yet!", show_alert=True)
 
 # Download Media
-@bot.on_message(filters.text & ~filters.command)
+@bot.on_message(filters.text)
 async def download_media(client, message: Message):
     url = message.text.strip()
+
+    # Ignore commands (messages starting with '/')
+    if message.text.startswith('/'):
+        return
 
     # Check subscription
     if not await is_subscribed(client, message.from_user.id):
         buttons = [
             [InlineKeyboardButton("Join Channel 1", url=f"https://t.me/{REQUIRED_CHANNELS[0][1:]}")],
             [InlineKeyboardButton("Join Channel 2", url=f"https://t.me/{REQUIRED_CHANNELS[1][1:]}")],
-            [InlineKeyboardButton("Join Channel 3", url=f"https://t.me/+6HvyRM1ccNM5YzE1")]
-            [InlineKeyboardButton("I Joined ✅", callback_data="check_subscription")],
+            [InlineKeyboardButton("Join Channel 3", url="https://t.me/+6HvyRM1ccNM5YzE1")],  # Moved to 3rd position
+            [InlineKeyboardButton("I Joined ✅", callback_data="check_subscription")]
         ]
         await message.reply(
             "You need to join our channels to use this bot:",
