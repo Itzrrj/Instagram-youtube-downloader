@@ -1,0 +1,6 @@
+pyrogram
+tgcrypto
+yt-dlp
+instagrapi
+pymongo
+python-dotenv
